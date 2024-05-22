@@ -1,7 +1,7 @@
 package com.example.currencyconverter.clients;
 
-import com.example.currencyconverter.util.enums.Currency;
-import com.example.currencyconverter.util.web.HttpHelper;
+import com.example.currencyconverter.models.Currency;
+import com.example.currencyconverter.web.HttpHelper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;

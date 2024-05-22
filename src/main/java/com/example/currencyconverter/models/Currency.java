@@ -1,4 +1,4 @@
-package com.example.currencyconverter.util.enums;
+package com.example.currencyconverter.models;
 
 public enum Currency {
     STN,

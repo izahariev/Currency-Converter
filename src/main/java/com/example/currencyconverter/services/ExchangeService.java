@@ -1,14 +1,13 @@
 package com.example.currencyconverter.services;
 
 import com.example.currencyconverter.clients.CurrencyApiClient;
-import com.example.currencyconverter.util.enums.Currency;
+import com.example.currencyconverter.models.Currency;
 import org.springframework.stereotype.Service;
 
 @Service("exchangeService")
 public class ExchangeService {
 
     private final CurrencyApiClient currencyApiClient;
-
 
     public ExchangeService(CurrencyApiClient currencyApiClient) {
         this.currencyApiClient = currencyApiClient;

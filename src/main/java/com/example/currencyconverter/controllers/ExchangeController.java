@@ -1,8 +1,8 @@
 package com.example.currencyconverter.controllers;
 
 import com.example.currencyconverter.errors.ApiError;
+import com.example.currencyconverter.models.Currency;
 import com.example.currencyconverter.services.ExchangeService;
-import com.example.currencyconverter.util.enums.Currency;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

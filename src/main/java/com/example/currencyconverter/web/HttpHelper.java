@@ -1,4 +1,4 @@
-package com.example.currencyconverter.util.web;
+package com.example.currencyconverter.web;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.web.util.UriComponentsBuilder;
