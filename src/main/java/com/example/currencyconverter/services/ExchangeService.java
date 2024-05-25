@@ -15,6 +15,9 @@ public class ExchangeService {
 
     public double getRate(Currency from, Currency to, double amount)
     {
+        if (amount < 1) {
+            throw new RuntimeException("Amount must be greater than 0");
+        }
         return currencyApiClient.convert(from, to, amount);
     }
 }
