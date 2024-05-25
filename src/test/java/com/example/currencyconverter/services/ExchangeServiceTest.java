@@ -33,4 +33,14 @@ public class ExchangeServiceTest {
                 exchangeService.getRate(Currency.EUR, Currency.BGN, 1),
                 "Incorrect exchange rate");
     }
+
+    @Test
+    public void givenInvalidAmount_whenRetrievingRate_thenThrowException() {
+        ExchangeService exchangeService = new ExchangeService(new CurrencyApiClient());
+        Assertions.assertThrows(
+                RuntimeException.class,
+                () -> exchangeService.getRate(Currency.EUR, Currency.BGN, 0),
+                "Invalid amount should not be accepted"
+        );
+    }
 }
