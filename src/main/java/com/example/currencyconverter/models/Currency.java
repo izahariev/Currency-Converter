@@ -1,5 +1,10 @@
 package com.example.currencyconverter.models;
 
+/**
+ * Model for supported currencies
+ *
+ * @author Ivaylo Zahariev
+ */
 public enum Currency {
     AED,
     AFN,

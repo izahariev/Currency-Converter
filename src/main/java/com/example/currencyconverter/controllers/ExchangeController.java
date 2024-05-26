@@ -13,6 +13,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+/**
+ * Controller for exchange APIs
+ *
+ * @author Ivaylo Zahariev
+ */
 @RestController
 public class ExchangeController {
 
@@ -22,6 +27,13 @@ public class ExchangeController {
         this.exchangeService = exchangeService;
     }
 
+    /**
+     * Returns the exchange rate for the given currencies
+     * @param from
+     *  The source currency
+     * @param to
+     *  The convert currency
+     */
     @GetMapping
     @RequestMapping("/get-rate")
     public double getRate(@RequestParam Currency from, @RequestParam Currency to) {
