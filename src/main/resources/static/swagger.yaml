@@ -30,7 +30,7 @@ paths:
         '200':
           description: Double value of how many of the second given currency can be bought for one of the first
           content:
-            text/plain:
+            application/json:
               schema:
                 type: number
                 items:
@@ -44,7 +44,7 @@ paths:
                 $ref: '#/components/responses/InvalidParameter'
                 example:
                   status: BAD_REQUEST
-                  error: Unsupported currency INVLD
+                  error: Unsupported currency 'INVLD'
 
 components:
   responses:
