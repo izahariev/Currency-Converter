@@ -39,18 +39,14 @@ public class HttpHelper {
             if (parameters != null) {
                 parameters.forEach(uriComponentsBuilder::queryParam);
             }
-            HttpRequest.Builder requestBuilder = null;
+            HttpRequest.Builder requestBuilder = HttpRequest.newBuilder();
             switch (httpMethod.toString()) {
-                case "GET" -> {
-                    requestBuilder = HttpRequest.newBuilder()
-                            .uri(URI.create(uriComponentsBuilder.toUriString()))
-                            .GET();
-                }
-                case "POST" -> {
-                    requestBuilder = HttpRequest.newBuilder()
-                            .uri(URI.create(uriComponentsBuilder.toUriString()))
-                            .POST(bodyPublisher == null ? HttpRequest.BodyPublishers.noBody() : bodyPublisher);
-                }
+                case "GET" -> requestBuilder = requestBuilder
+                        .uri(URI.create(uriComponentsBuilder.toUriString()))
+                        .GET();
+                case "POST" -> requestBuilder = requestBuilder
+                        .uri(URI.create(uriComponentsBuilder.toUriString()))
+                        .POST(bodyPublisher == null ? HttpRequest.BodyPublishers.noBody() : bodyPublisher);
             }
 
             if (headers != null) {
@@ -61,9 +57,7 @@ public class HttpHelper {
 
             return HttpClient.newHttpClient().send(requestBuilder.build(),
                     HttpResponse.BodyHandlers.ofString());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
