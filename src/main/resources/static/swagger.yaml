@@ -1,0 +1,77 @@
+openapi: 3.1.0
+
+info:
+  title: Currency Converter
+  description:
+    <p align="center">A service providing REST APIs for currency conversion and exchange rates</p>
+    <hr>
+  version: 0.1.0
+
+paths:
+  /get-rate:
+    get:
+      summary: Returns how many of the second given currency can be bought if one of the first given currency is sold
+      parameters:
+        - in: query
+          name: from
+          required: true
+          schema:
+            $ref: '#/components/schemas/Currency'
+            example: EUR
+          description: The sell currency
+        - in: query
+          name: to
+          required: true
+          schema:
+            $ref: '#/components/schemas/Currency'
+            example: BGN
+          description: The buy currency
+      responses:
+        '200':
+          description: Double value of how many of the second given currency can be bought for one of the first
+          content:
+            application/json:
+              schema:
+                type: number
+                items:
+                  type: string
+                example: 1.95
+        '400':
+          description: Invalid Currency
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/InvalidParameter'
+                example:
+                  status: BAD_REQUEST
+                  error: Unsupported currency 'INVLD'
+
+components:
+  responses:
+    InvalidParameter:
+      description: An invalid parameter value was given
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  schemas:
+    Currency:
+      type: string
+      enum: [AED, AFN, ALL, AMD, ANG, AOA, ARS, AUD, AWG, AZN, BAM, BBD, BDT, BGN, BHD, BIF, BMD, BND, BOB, BRL, BSD,
+             BTN, BWP, BYN, BZD, CAD, CDF, CHF, CLP, CNY, COP, CRC, CUC, CUP, CVE, CZK, DJF, DKK, DOP, DZD, EGP, ERN,
+             ETB, EUR, FJD, FKP, GBP, GEL, GGP, GHS, GIP, GMD, GNF, GTQ, GYD, HKD, HNL, HRK, HTG, HUF, IDR, ILS, IMP,
+             INR, IQD, IRR, ISK, JEP, JMD, JOD, JPY, KES, KGS, KHR, KMF, KRW, KWD, KYD, KZT, LAK, LBP, LKR, LRD, LSL,
+             LYD, MAD, MDL, MGA, MKD, MMK, MNT, MOP, MRU, MUR, MVR, MWK, MXN, MYR, MZN, NAD, NGN, NIO, NOK, NPR, NZD,
+             OMR, PAB, PEN, PGK, PHP, PKR, PLN, PYG, QAR, RON, RSD, RUB, RWF, SAR, SBD, SCR, SDG, SEK, SGD, SHP, SLL,
+             SOS, SRD, SSP, STN, SVC, SYP, SZL, THB, TJS, TMT, TND, TOP, TRY, TTD, TWD, TZS, UAH, UGX, USD, USDC, USDT,
+             UYU, UZS, VES, VND, VUV, WST, XAF, XAG, XAU, XCD, XDR, XOF, XPF, YER, ZAR, ZMW, ZWL]
+    Error:
+      type: object
+      properties:
+        status:
+          type: string
+          description: HTTP status of the error
+        error:
+          type: string
+          description: Text description for the error
