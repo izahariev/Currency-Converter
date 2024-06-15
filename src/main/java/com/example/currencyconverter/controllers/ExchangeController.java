@@ -44,10 +44,7 @@ public class ExchangeController {
     private ResponseEntity<?> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
         Class<?> requiredType = ex.getRequiredType();
 
-        var apiError = new ApiError(
-                HttpStatus.BAD_REQUEST,
-                "Invalid parameter"
-        );
+        var apiError = new ApiError(HttpStatus.BAD_REQUEST, "Invalid parameter");
         if (requiredType != null && requiredType.isAssignableFrom(Currency.class)) {
             apiError = new ApiError(HttpStatus.BAD_REQUEST, String.format("Unsupported currency '%s'", ex.getValue()));
         }

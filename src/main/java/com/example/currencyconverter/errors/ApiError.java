@@ -11,5 +11,8 @@ import org.springframework.http.HttpStatus;
  *
  * @author Ivaylo Zahariev
  */
-public record ApiError(HttpStatus status, String error) {
+public record ApiError(HttpStatus status, int code, String error) {
+    public ApiError(HttpStatus status, String error) {
+        this(status, status.value(), error);
+    }
 }
