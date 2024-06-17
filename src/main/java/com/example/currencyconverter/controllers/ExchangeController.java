@@ -3,6 +3,7 @@ package com.example.currencyconverter.controllers;
 import com.example.currencyconverter.errors.ApiError;
 import com.example.currencyconverter.models.Currency;
 import com.example.currencyconverter.models.CurrencyConversionData;
+import com.example.currencyconverter.models.SimpleResponse;
 import com.example.currencyconverter.services.ExchangeService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
@@ -44,8 +45,8 @@ public class ExchangeController {
      */
     @GetMapping
     @RequestMapping("/get-rate")
-    public double getRate(@RequestParam Currency from, @RequestParam Currency to) {
-        return exchangeService.getRate(from, to, 1);
+    public SimpleResponse<Double> getRate(@RequestParam Currency from, @RequestParam Currency to) {
+        return new SimpleResponse<>(exchangeService.getRate(from, to, 1));
     }
 
     /**
@@ -58,8 +59,8 @@ public class ExchangeController {
      */
     @PostMapping
     @RequestMapping("/convert")
-    public double convert(@Valid @RequestBody CurrencyConversionData data) {
-        return exchangeService.getRate(data.from(), data.to(), data.amount());
+    public SimpleResponse<Double> convert(@Valid @RequestBody CurrencyConversionData data) {
+        return new SimpleResponse<>(exchangeService.getRate(data.from(), data.to(), data.amount()));
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
