@@ -1,6 +1,7 @@
 package com.example.currencyconverter.controllers;
 
 import com.example.currencyconverter.errors.ApiError;
+import com.example.currencyconverter.models.ConversionResult;
 import com.example.currencyconverter.models.Currency;
 import com.example.currencyconverter.models.CurrencyConversionData;
 import com.example.currencyconverter.models.SimpleResponse;
@@ -47,7 +48,7 @@ public class ExchangeController {
     @GetMapping
     @RequestMapping("/get-rate")
     public SimpleResponse<BigDecimal> getRate(@RequestParam Currency from, @RequestParam Currency to) {
-        return new SimpleResponse<>(exchangeService.getRate(from, to, BigDecimal.ONE, false));
+        return new SimpleResponse<>(exchangeService.getRate(from, to, BigDecimal.ONE));
     }
 
     /**
@@ -60,8 +61,8 @@ public class ExchangeController {
      */
     @PostMapping
     @RequestMapping("/convert")
-    public SimpleResponse<BigDecimal> convert(@Valid @RequestBody CurrencyConversionData data) {
-        return new SimpleResponse<>(exchangeService.getRate(data.from(), data.to(), data.amount(), true));
+    public ConversionResult convert(@Valid @RequestBody CurrencyConversionData data) {
+        return exchangeService.convert(data.from(), data.to(), data.amount());
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)

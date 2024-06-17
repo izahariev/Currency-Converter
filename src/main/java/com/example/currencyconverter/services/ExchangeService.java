@@ -2,6 +2,7 @@ package com.example.currencyconverter.services;
 
 import com.example.currencyconverter.clients.CurrencyApiClient;
 import com.example.currencyconverter.entities.ConversionEntity;
+import com.example.currencyconverter.models.ConversionResult;
 import com.example.currencyconverter.models.Currency;
 import com.example.currencyconverter.repositories.ConversionRepository;
 import org.springframework.stereotype.Service;
@@ -33,19 +34,27 @@ public class ExchangeService {
      * @param amount
      *  The source currency amount
      */
-    public BigDecimal getRate(Currency from, Currency to, BigDecimal amount, boolean saveTransaction)
+    public BigDecimal getRate(Currency from, Currency to, BigDecimal amount)
     {
         if (amount.compareTo(BigDecimal.ONE) < 0) {
             throw new RuntimeException("Amount must be greater than 0");
         }
-        if (saveTransaction) {
-            ConversionEntity conversionEntity = new ConversionEntity();
-            conversionEntity.setFromCurrency(from);
-            conversionEntity.setToCurrency(to);
-            conversionEntity.setAmount(amount);
-            conversionEntity.setEpochMilliseconds(System.currentTimeMillis());
-            conversionRepository.save(conversionEntity);
-        }
         return currencyApiClient.convert(from, to, amount);
+    }
+
+    public ConversionResult convert(Currency from, Currency to, BigDecimal amount) {
+        if (amount.compareTo(BigDecimal.ONE) < 0) {
+            throw new RuntimeException("Amount must be greater than 0");
+        }
+        BigDecimal convertedValue = currencyApiClient.convert(from, to, amount);
+        ConversionEntity conversionEntity = new ConversionEntity();
+        conversionEntity.setFromCurrency(from);
+        conversionEntity.setToCurrency(to);
+        conversionEntity.setSourceAmount(amount);
+        conversionEntity.setConvertedAmount(convertedValue);
+        conversionEntity.setEpochMilliseconds(System.currentTimeMillis());
+        ConversionEntity savedEntity = conversionRepository.save(conversionEntity);
+
+        return new ConversionResult(savedEntity.getId(), convertedValue);
     }
 }

@@ -23,7 +23,8 @@ public class ConversionEntity {
     private Currency fromCurrency;
     @Enumerated(EnumType.STRING)
     private Currency toCurrency;
-    private BigDecimal amount;
+    private BigDecimal sourceAmount;
+    private BigDecimal convertedAmount;
     private Long epochMilliseconds;
 
     public ConversionEntity() {}
@@ -52,12 +53,12 @@ public class ConversionEntity {
         this.toCurrency = to;
     }
 
-    public BigDecimal getAmount() {
-        return amount;
+    public BigDecimal getSourceAmount() {
+        return sourceAmount;
     }
 
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
+    public void setSourceAmount(BigDecimal amount) {
+        this.sourceAmount = amount;
     }
 
     public Long getEpochMilliseconds() {
@@ -66,5 +67,13 @@ public class ConversionEntity {
 
     public void setEpochMilliseconds(Long epochMilliseconds) {
         this.epochMilliseconds = epochMilliseconds;
+    }
+
+    public BigDecimal getConvertedAmount() {
+        return convertedAmount;
+    }
+
+    public void setConvertedAmount(BigDecimal convertedAmount) {
+        this.convertedAmount = convertedAmount;
     }
 }

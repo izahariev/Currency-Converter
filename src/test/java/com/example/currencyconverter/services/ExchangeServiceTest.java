@@ -35,7 +35,7 @@ public class ExchangeServiceTest {
         ExchangeService exchangeService = new ExchangeService(mockCurrencyApiClient, conversionRepository);
         Assertions.assertEquals(
                 BigDecimal.valueOf(1.95),
-                exchangeService.getRate(Currency.EUR, Currency.BGN, BigDecimal.ONE, false),
+                exchangeService.getRate(Currency.EUR, Currency.BGN, BigDecimal.ONE),
                 "Incorrect exchange rate");
     }
 
@@ -44,7 +44,7 @@ public class ExchangeServiceTest {
         ExchangeService exchangeService = new ExchangeService(new CurrencyApiClient(), conversionRepository);
         Assertions.assertThrows(
                 RuntimeException.class,
-                () -> exchangeService.getRate(Currency.EUR, Currency.BGN, BigDecimal.ZERO, false),
+                () -> exchangeService.getRate(Currency.EUR, Currency.BGN, BigDecimal.ZERO),
                 "Invalid amount should not be accepted"
         );
     }
