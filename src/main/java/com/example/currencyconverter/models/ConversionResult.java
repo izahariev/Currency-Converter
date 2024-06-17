@@ -7,7 +7,7 @@ import java.util.UUID;
  * Model for currency conversion result
  * @param id
  *  ID of the conversion transaction
- * @param result
+ * @param value
  *  Converted value
  *
  * @author Ivaylo Zahariev
