@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,8 +46,8 @@ public class ExchangeController {
      */
     @GetMapping
     @RequestMapping("/get-rate")
-    public SimpleResponse<Double> getRate(@RequestParam Currency from, @RequestParam Currency to) {
-        return new SimpleResponse<>(exchangeService.getRate(from, to, 1));
+    public SimpleResponse<BigDecimal> getRate(@RequestParam Currency from, @RequestParam Currency to) {
+        return new SimpleResponse<>(exchangeService.getRate(from, to, BigDecimal.ONE, false));
     }
 
     /**
@@ -59,8 +60,8 @@ public class ExchangeController {
      */
     @PostMapping
     @RequestMapping("/convert")
-    public SimpleResponse<Double> convert(@Valid @RequestBody CurrencyConversionData data) {
-        return new SimpleResponse<>(exchangeService.getRate(data.from(), data.to(), data.amount()));
+    public SimpleResponse<BigDecimal> convert(@Valid @RequestBody CurrencyConversionData data) {
+        return new SimpleResponse<>(exchangeService.getRate(data.from(), data.to(), data.amount(), true));
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)

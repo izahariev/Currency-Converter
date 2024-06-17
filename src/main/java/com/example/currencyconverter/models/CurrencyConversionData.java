@@ -1,6 +1,8 @@
 package com.example.currencyconverter.models;
 
-import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.DecimalMin;
+
+import java.math.BigDecimal;
 
 /**
  * Model for data needed for a currency conversion
@@ -16,5 +18,5 @@ import jakarta.validation.constraints.Min;
 public record CurrencyConversionData(
         Currency from,
         Currency to,
-        @Min(value = 1, message = "The amount must be greater than 0") double amount) {
+        @DecimalMin(value = "1.0", message = "The amount must be greater than 0") BigDecimal amount) {
 }
