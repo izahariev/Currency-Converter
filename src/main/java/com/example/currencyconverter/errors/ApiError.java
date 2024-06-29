@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
  * Model for API errors
  * @param status
  *  HTTP status for the error
+ * @param code
+ *  HTTP error code
  * @param errors
  *  List of error messages
  *

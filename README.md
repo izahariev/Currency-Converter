@@ -4,7 +4,8 @@
 
 <hr>
 
-<h2 align="center">APIs</h2>
+<h2 align="center">Functionalities</h2>
 <ul>
-    <li>/get-rate - retrieve the rate for a given currency pair</li>
+    <li>Get rate between two currencies</li>
+    <li>Convert a given amount from one currency to another</li>
 </ul>
