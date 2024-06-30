@@ -1,15 +1,15 @@
 package com.example.currencyconverter.controllers;
 
-import com.example.currencyconverter.errors.ApiError;
+import com.example.currencyconverter.errors.InvalidAmountException;
+import com.example.currencyconverter.models.ApiResponse;
 import com.example.currencyconverter.models.ConversionResult;
 import com.example.currencyconverter.models.Currency;
 import com.example.currencyconverter.models.CurrencyConversionData;
-import com.example.currencyconverter.models.SimpleResponse;
 import com.example.currencyconverter.services.ExchangeService;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +22,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 /**
  * Controller for exchange APIs
@@ -47,8 +47,8 @@ public class ExchangeController {
      */
     @GetMapping
     @RequestMapping("/get-rate")
-    public SimpleResponse<BigDecimal> getRate(@RequestParam Currency from, @RequestParam Currency to) {
-        return new SimpleResponse<>(exchangeService.getRate(from, to, BigDecimal.ONE));
+    public ApiResponse<BigDecimal> getRate(@RequestParam Currency from, @RequestParam Currency to) {
+        return new ApiResponse<>(HttpStatus.OK, exchangeService.getRate(from, to));
     }
 
     /**
@@ -61,27 +61,67 @@ public class ExchangeController {
      */
     @PostMapping
     @RequestMapping("/convert")
-    public ConversionResult convert(@Valid @RequestBody CurrencyConversionData data) {
-        return exchangeService.convert(data.from(), data.to(), data.amount());
+    public ApiResponse<ConversionResult> convert(@Valid @RequestBody CurrencyConversionData data) {
+        try {
+            return new ApiResponse<>(HttpStatus.OK, exchangeService.convert(data.from(), data.to(), data.amount()));
+        } catch (InvalidAmountException e) {
+            return new ApiResponse<>(HttpStatus.BAD_REQUEST, null, e.getMessage());
+        }
     }
 
+    // Exception Handlers
+
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    private ResponseEntity<?> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
-        var apiError = new ApiError(HttpStatus.BAD_REQUEST, "Invalid parameter");
+    private ApiResponse<?> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        var apiError = new ApiResponse<>(HttpStatus.BAD_REQUEST, null, "Invalid parameter");
         if (ex.getParameter().getParameterType().isAssignableFrom(Currency.class)) {
-            apiError = new ApiError(HttpStatus.BAD_REQUEST, String.format("Unsupported currency '%s'", ex.getValue()));
+            apiError = new ApiResponse<>(
+                    HttpStatus.BAD_REQUEST,
+                    null,
+                    String.format("Unsupported currency '%s'", ex.getValue())
+            );
         }
 
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.status());
+        return apiError;
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    private ResponseEntity<?> handleInvalidData(MethodArgumentNotValidException ex) {
-        List<String> errors = new ArrayList<>();
+    private ApiResponse<?> handleIncorrectData(MethodArgumentNotValidException ex) {
+        var errors = new ArrayList<>();
         for (var error : ex.getBindingResult().getAllErrors()) {
             errors.add(error.getDefaultMessage());
         }
-        var apiError = new ApiError(HttpStatus.BAD_REQUEST, errors.toArray(new String[0]));
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.status());
+        return new ApiResponse<>(HttpStatus.BAD_REQUEST, null, errors.toArray(new String[0]));
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    private ApiResponse<?> handleInvalidData(HttpMessageNotReadableException ex) {
+        var apiError = new ApiResponse<>(HttpStatus.BAD_REQUEST, null, "Invalid value given");
+        if (ex.getCause() instanceof InvalidFormatException) {
+            InvalidFormatException invalidFormatException = (InvalidFormatException) ex.getCause();
+            switch (invalidFormatException.getTargetType().getSimpleName()){
+                case "BigDecimal": {
+                    apiError =  new ApiResponse<>(
+                            HttpStatus.BAD_REQUEST,
+                            null,
+                            String.format("Invalid value '%s'! Must be a number", invalidFormatException.getValue())
+                    );
+                    break;
+                }
+                case "Currency": {
+                    apiError =  new ApiResponse<>(
+                            HttpStatus.BAD_REQUEST,
+                            null,
+                            String.format(
+                                    "Invalid value '%s'! Must be a one of %s",
+                                    invalidFormatException.getValue(),
+                                    Arrays.toString(Currency.values())
+                            )
+                    );
+                    break;
+                }
+            }
+        }
+        return apiError;
     }
 }

@@ -2,6 +2,7 @@ package com.example.currencyconverter.services;
 
 import com.example.currencyconverter.clients.CurrencyApiClient;
 import com.example.currencyconverter.entities.ConversionEntity;
+import com.example.currencyconverter.errors.InvalidAmountException;
 import com.example.currencyconverter.models.ConversionResult;
 import com.example.currencyconverter.models.Currency;
 import com.example.currencyconverter.repositories.ConversionRepository;
@@ -34,19 +35,18 @@ public class ExchangeService {
      * @param amount
      *  The source currency amount
      */
-    public BigDecimal getRate(Currency from, Currency to, BigDecimal amount)
-    {
-        if (amount.compareTo(BigDecimal.ONE) < 0) {
-            throw new RuntimeException("Amount must be greater than 0");
-        }
-        return currencyApiClient.convert(from, to, amount);
+    public BigDecimal getRate(Currency from, Currency to) {
+        return currencyApiClient.convert(from, to, BigDecimal.ONE);
     }
 
-    public ConversionResult convert(Currency from, Currency to, BigDecimal amount) {
+    public ConversionResult convert(Currency from, Currency to, BigDecimal amount) throws InvalidAmountException {
         if (amount.compareTo(BigDecimal.ONE) < 0) {
-            throw new RuntimeException("Amount must be greater than 0");
+            throw new InvalidAmountException();
         }
-        BigDecimal convertedValue = currencyApiClient.convert(from, to, amount);
+        BigDecimal convertedValue = BigDecimal.ZERO;
+        if (amount.compareTo(BigDecimal.ZERO) > 0) {
+            convertedValue = currencyApiClient.convert(from, to, amount);
+        }
         ConversionEntity conversionEntity = new ConversionEntity();
         conversionEntity.setFromCurrency(from);
         conversionEntity.setToCurrency(to);
