@@ -2,6 +2,7 @@ package com.example.currencyconverter.services;
 
 import com.example.currencyconverter.clients.CurrencyApiClient;
 import com.example.currencyconverter.entities.ConversionEntity;
+import com.example.currencyconverter.errors.InvalidAmountException;
 import com.example.currencyconverter.models.ConversionResult;
 import com.example.currencyconverter.models.Currency;
 import com.example.currencyconverter.repositories.ConversionRepository;
@@ -38,22 +39,12 @@ public class ExchangeServiceTest {
         ExchangeService exchangeService = new ExchangeService(mockCurrencyApiClient, mockConversionRepository);
         Assertions.assertEquals(
                 BigDecimal.valueOf(1.95),
-                exchangeService.getRate(Currency.EUR, Currency.BGN, BigDecimal.ONE),
+                exchangeService.getRate(Currency.EUR, Currency.BGN),
                 "Incorrect exchange rate");
     }
 
     @Test
-    public void givenInvalidAmount_whenRetrievingRate_thenThrowException() {
-        ExchangeService exchangeService = new ExchangeService(new CurrencyApiClient(), mockConversionRepository);
-        Assertions.assertThrows(
-                RuntimeException.class,
-                () -> exchangeService.getRate(Currency.EUR, Currency.BGN, BigDecimal.ZERO),
-                "Invalid amount should not be accepted"
-        );
-    }
-
-    @Test
-    public void givenValidData_whenConvertingCurrencies_thenReturnConvertedResult() {
+    public void givenValidData_whenConvertingCurrencies_thenReturnConvertedResult() throws InvalidAmountException {
         when(
                 mockCurrencyApiClient.convert(
                         Mockito.any(Currency.class),
@@ -91,7 +82,7 @@ public class ExchangeServiceTest {
     public void givenInvalidAmount_whenConvertingCurrencies_thenThrowException() {
         ExchangeService exchangeService = new ExchangeService(new CurrencyApiClient(), mockConversionRepository);
         Assertions.assertThrows(
-                RuntimeException.class,
+                InvalidAmountException.class,
                 () -> exchangeService.convert(Currency.EUR, Currency.BGN, BigDecimal.ZERO),
                 "Invalid amount should not be accepted"
         );
