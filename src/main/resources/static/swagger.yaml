@@ -44,7 +44,17 @@ paths:
                 $ref: '#/components/responses/InvalidParameter'
                 example:
                   status: BAD_REQUEST
+                  code: 403
                   error: Unsupported currency 'INVLD'
+  /convert:
+    post:
+      summary: Convert a given amount from one currency to another
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CurrencyConversionData'
+
 
 components:
   responses:
@@ -66,12 +76,37 @@ components:
              OMR, PAB, PEN, PGK, PHP, PKR, PLN, PYG, QAR, RON, RSD, RUB, RWF, SAR, SBD, SCR, SDG, SEK, SGD, SHP, SLL,
              SOS, SRD, SSP, STN, SVC, SYP, SZL, THB, TJS, TMT, TND, TOP, TRY, TTD, TWD, TZS, UAH, UGX, USD, USDC, USDT,
              UYU, UZS, VES, VND, VUV, WST, XAF, XAG, XAU, XCD, XDR, XOF, XPF, YER, ZAR, ZMW, ZWL]
+      example: USD
+
+    CurrencyConversionData:
+      type: object
+      properties:
+        from:
+          description: The source currency
+          $ref: '#/components/schemas/Currency'
+          example: EUR
+        to:
+          description: The converted currency
+          $ref: '#/components/schemas/Currency'
+          example: BGN
+        amount:
+          description: The amount of the source currency
+          type: number
+          format: double
+          example: 150.55
+
     Error:
       type: object
       properties:
         status:
           type: string
           description: HTTP status of the error
+          example: NOT_FOUND
+        code:
+          type: int
+          description: HTTP error code
+          example: 404
         error:
           type: string
           description: Text description for the error
+          example: No such resource

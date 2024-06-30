@@ -7,6 +7,7 @@ import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpMethod;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,7 +32,7 @@ public class CurrencyApiClient {
      * @return
      *  Converted value
      */
-    public double convert(Currency from, Currency to, double amount) {
+    public BigDecimal convert(Currency from, Currency to, BigDecimal amount) {
         Map<String, String> parameters = getParametersMap();
         parameters.put("from", from.name());
         parameters.put("to", to.name());
@@ -44,7 +45,12 @@ public class CurrencyApiClient {
                                     parameters,
                                     null, null)
                             .body());
-            return jsonObject.getJSONObject("rates").getJSONObject(to.name()).getDouble("rate_for_amount");
+            return BigDecimal.valueOf(
+                    jsonObject
+                            .getJSONObject("rates")
+                            .getJSONObject(to.name())
+                            .getDouble("rate_for_amount")
+            );
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
