@@ -1,6 +1,9 @@
 package com.example.currencyconverter.controllers;
 
+import com.example.currencyconverter.dtos.Conversion;
 import com.example.currencyconverter.errors.InvalidAmountException;
+import com.example.currencyconverter.errors.InvalidPageNumberException;
+import com.example.currencyconverter.errors.InvalidPageSizeException;
 import com.example.currencyconverter.models.ApiResponse;
 import com.example.currencyconverter.models.ConversionResult;
 import com.example.currencyconverter.models.Currency;
@@ -23,6 +26,9 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Controller for exchange APIs
@@ -65,6 +71,32 @@ public class ExchangeController {
         try {
             return new ApiResponse<>(HttpStatus.OK, exchangeService.convert(data.from(), data.to(), data.amount()));
         } catch (InvalidAmountException e) {
+            return new ApiResponse<>(HttpStatus.BAD_REQUEST, null, e.getMessage());
+        }
+    }
+
+    @GetMapping
+    @RequestMapping("/get-transaction")
+    public ApiResponse<Conversion> getTransaction(@RequestParam UUID id) {
+        if (id == null) {
+            return new ApiResponse<>(HttpStatus.BAD_REQUEST, null, "Transaction ID is required");
+        }
+        return new ApiResponse<>(HttpStatus.OK, exchangeService.getConversion(id));
+    }
+
+    @GetMapping
+    @RequestMapping("/get-transactions")
+    public ApiResponse<List<Conversion>> getConversionHistory(@RequestParam Date date, int page, int size) {
+
+        if (date == null) {
+            return new ApiResponse<>(HttpStatus.BAD_REQUEST, null, "Transaction date is required");
+        }
+
+        try {
+            return new ApiResponse<>(HttpStatus.OK, exchangeService.conversionHistoryByDate(date, page, size));
+        } catch (InvalidPageNumberException e) {
+            return new ApiResponse<>(HttpStatus.BAD_REQUEST, null, e.getMessage());
+        } catch (InvalidPageSizeException e) {
             return new ApiResponse<>(HttpStatus.BAD_REQUEST, null, e.getMessage());
         }
     }

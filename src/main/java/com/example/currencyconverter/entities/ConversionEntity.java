@@ -1,5 +1,6 @@
 package com.example.currencyconverter.entities;
 
+import com.example.currencyconverter.dtos.Conversion;
 import com.example.currencyconverter.models.Currency;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -75,5 +76,10 @@ public class ConversionEntity {
 
     public void setConvertedAmount(BigDecimal convertedAmount) {
         this.convertedAmount = convertedAmount;
+    }
+
+    public Conversion toConversion() {
+        return new Conversion(this.id, this.fromCurrency, this.toCurrency, this.sourceAmount, this.convertedAmount,
+                this.epochMilliseconds);
     }
 }
